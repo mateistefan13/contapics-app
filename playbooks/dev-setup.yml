@@ -1,0 +1,52 @@
+---
+- name: Development setup for Postgres and MinIO
+  hosts: localhost
+  gather_facts: no
+  vars:
+    admin_user: root
+    admin_password: $2a$12$2fAJg5B9piLWgUuvKQaL6eDDwOstOUFsbUCIs8sy3uiOAuIo1EmYi
+    minio_alias: contapics
+    minio_url: http://localhost:9000
+    minio_user: "{{ lookup('env','MINIO_ROOT_USER') }}"
+    minio_pass: "{{ lookup('env','MINIO_ROOT_PASSWORD') }}"
+    bucket_name: contapics
+
+  tasks:
+    - name: Wait for Postgres to be ready
+      wait_for:
+        host: localhost
+        port: "{{ lookup('env','DB_PORT') | default('5432') | int }}"
+        delay: 5
+        timeout: 30
+
+    - name: Seed admin user in application table
+      community.postgresql.postgresql_query:
+        login_host: localhost
+        login_port: "{{ lookup('env','DB_PORT') }}"
+        login_user: "{{ lookup('env','DB_USER') }}"
+        login_password: "{{ lookup('env','DB_PASSWORD') }}"
+        login_db: "{{ lookup('env','DB_NAME') }}"
+        query: |
+          INSERT INTO users (username, password, role) 
+          SELECT 'root',
+                '$2a$12$2fAJg5B9piLWgUuvKQaL6eDDwOstOUFsbUCIs8sy3uiOAuIo1EmYi',
+                'ADMIN'
+          WHERE NOT EXISTS (
+            SELECT 1 FROM users WHERE username = 'root'
+          );
+
+    - name: Wait for MinIO API to be ready
+      wait_for:
+        host: localhost
+        port: 9000
+        delay: 5
+        timeout: 30
+
+    - name: Add MinIO alias
+      command: mc alias set {{ minio_alias }} {{ minio_url }} {{ minio_user }} {{ minio_pass }} --no-color --quiet
+      register: mc_alias
+      changed_when: false
+
+    - name: Create MinIO bucket if not exists
+      command: mc mb {{ minio_alias }}/{{ bucket_name }}
+      ignore_errors: yes

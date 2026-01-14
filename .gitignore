@@ -6,4 +6,4 @@ desktop.ini
 
 # WSL / Linux
 *.swp
-*.swo
+*.swo.venv/
