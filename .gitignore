@@ -1,0 +1,9 @@
+/.metadata/
+*.Identifier
+# Windows
+Thumbs.db
+desktop.ini
+
+# WSL / Linux
+*.swp
+*.swo
