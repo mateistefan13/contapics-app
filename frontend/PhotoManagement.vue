@@ -48,7 +48,7 @@ export default {
     // Fetch photos for the user's company
     const fetchPhotos = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/photos`);
+        const response = await axios.get(`/photos`);
         photos.value = response.data;
       } catch (error) {
         console.error("Error fetching photos:", error);
@@ -68,7 +68,7 @@ export default {
       formData.append("file", selectedFile.value);
 
       try {
-        await axios.post(`${backendUrl}/photos`, formData, {
+        await axios.post(`/photos`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -90,7 +90,7 @@ export default {
       }
 
       try {
-        await axios.delete(`${backendUrl}/photos/${photoId}`);
+        await axios.delete(`/photos/${photoId}`);
         // Remove OCR result if exists
         delete ocrResults.value[photoId];
         fetchPhotos(); // Refresh photo list
@@ -104,7 +104,7 @@ export default {
     const performOcr = async (photoId) => {
       try {
         ocrLoading.value[photoId] = true;
-        const response = await axios.post(`${backendUrl}/photos/${photoId}/ocr`);
+        const response = await axios.post(`/photos/${photoId}/ocr`);
 
         if (response.data.success) {
           ocrResults.value[photoId] = response.data.text || "No text found in image";

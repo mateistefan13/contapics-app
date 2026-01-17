@@ -56,7 +56,7 @@ export default {
     // Fetch all users
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/users`);
+        const response = await axios.get(`/users`);
         users.value = response.data;
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -66,7 +66,7 @@ export default {
     // Fetch all companies
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/companies`);
+        const response = await axios.get(`/companies`);
         companies.value = response.data;
       } catch (error) {
         console.error("Error fetching companies:", error);
@@ -84,9 +84,9 @@ export default {
         };
 
         if (isEditing.value) {
-          await axios.put(`${backendUrl}/users/${editingUserId.value}`, payload);
+          await axios.put(`/users/${editingUserId.value}`, payload);
         } else {
-          await axios.post(`${backendUrl}/users`, payload);
+          await axios.post(`/users`, payload);
         }
 
         form.value = { username: "", password: "", role: "CLIENT", companyId: null };
@@ -108,7 +108,7 @@ export default {
     // Delete user
     const deleteUser = async (id) => {
       try {
-        await axios.delete(`${backendUrl}/users/${id}`);
+        await axios.delete(`/users/${id}`);
         fetchUsers();
       } catch (error) {
         console.error("Error deleting user:", error);

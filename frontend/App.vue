@@ -60,12 +60,12 @@ export default {
   methods: {
     async login() {
       try {
-        const response = await axios.post(`${window._env_.BACKEND_URL}/auth/login`, this.credentials);
+        const response = await axios.post(`/auth/login`, this.credentials);
         this.isAuthenticated = true;
         localStorage.setItem("authToken", response.data.token);
 
         // Fetch user details from /auth/me
-        const userDetails = await axios.get(`${window._env_.BACKEND_URL}/auth/me`, {
+        const userDetails = await axios.get(`/auth/me`, {
           headers: {
             Authorization: `Bearer ${response.data.token}`,
           },
